@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Orkla Water Level Monitor
- * Description: Fetches water level data from CSV every hour and displays interactive graphs with archive functionality
- * Version: 1.0.0
+ * Description: Fetches water level data from CSV every hour and displays interactive graphs with archive functionality, health monitoring, and performance optimization
+ * Version: 1.1.0
  * Author: Your Name
  */
 
@@ -29,7 +29,7 @@ class OrklaWaterLevel {
     private static $frontend_localized = false;
     const ADMIN_FLASH_KEY = 'orkla_dataset_flash';
     const DEBUG_MODE = true;
-    const PLUGIN_VERSION = '1.0.8';
+    const PLUGIN_VERSION = '1.1.0';
     protected $admin_messages = array(
         'errors'  => array(),
         'notices' => array(),
@@ -49,11 +49,15 @@ class OrklaWaterLevel {
     public function init() {
         // Include required files
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-hydapi-client.php');
+        require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-health-monitor.php');
+        require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-import-optimizer.php');
 
         // Add AJAX handlers - these must be registered early
         add_action('wp_ajax_get_water_data', array($this, 'ajax_get_water_data'));
         add_action('wp_ajax_nopriv_get_water_data', array($this, 'ajax_get_water_data'));
         add_action('wp_ajax_fetch_csv_data_now', array($this, 'ajax_fetch_csv_data_now'));
+        add_action('wp_ajax_orkla_run_health_check', array($this, 'ajax_run_health_check'));
+        add_action('wp_ajax_orkla_cleanup_old_data', array($this, 'ajax_cleanup_old_data'));
         
         // Enqueue scripts and styles globally for frontend
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -407,7 +411,24 @@ class OrklaWaterLevel {
             array($this, 'admin_debug_page')
         );
 
+        add_submenu_page(
+            'orkla-water-level',
+            __('Health Monitor', 'orkla-water-level'),
+            __('Health Monitor', 'orkla-water-level'),
+            'manage_options',
+            'orkla-water-level-health',
+            array($this, 'admin_health_monitor_page')
+        );
+
         return $hook;
+    }
+
+    public function admin_health_monitor_page() {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have permission to access this page.', 'orkla-water-level'));
+        }
+
+        include(ORKLA_WATER_LEVEL_PATH . 'templates/health-monitor-page.php');
     }
 
     public function admin_shortcodes_page() {
@@ -1283,6 +1304,51 @@ class OrklaWaterLevel {
             wp_send_json_success($payload);
         } catch (Exception $e) {
             wp_send_json_error(__('Error during fetch: ', 'orkla-water-level') . $e->getMessage());
+        }
+    }
+
+    public function ajax_run_health_check() {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'orkla_nonce')) {
+            wp_send_json_error(__('Security check failed.', 'orkla-water-level'));
+            return;
+        }
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(__('Insufficient permissions.', 'orkla-water-level'));
+            return;
+        }
+
+        try {
+            $monitor = new Orkla_Health_Monitor();
+            $results = $monitor->run_health_check();
+            wp_send_json_success($results);
+        } catch (Exception $e) {
+            wp_send_json_error(__('Health check failed: ', 'orkla-water-level') . $e->getMessage());
+        }
+    }
+
+    public function ajax_cleanup_old_data() {
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'orkla_nonce')) {
+            wp_send_json_error(__('Security check failed.', 'orkla-water-level'));
+            return;
+        }
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(__('Insufficient permissions.', 'orkla-water-level'));
+            return;
+        }
+
+        try {
+            $days = isset($_POST['days']) ? intval($_POST['days']) : 365;
+            $optimizer = new Orkla_Import_Optimizer();
+            $count = $optimizer->cleanup_old_data($days);
+
+            wp_send_json_success(array(
+                'message' => sprintf(__('Cleaned up %d old records.', 'orkla-water-level'), $count),
+                'deleted_count' => $count,
+            ));
+        } catch (Exception $e) {
+            wp_send_json_error(__('Cleanup failed: ', 'orkla-water-level') . $e->getMessage());
         }
     }
 
