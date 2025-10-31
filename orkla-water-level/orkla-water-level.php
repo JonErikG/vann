@@ -239,8 +239,8 @@ class OrklaWaterLevel {
     public function enqueue_scripts() {
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js', array(), '3.9.1', true);
         wp_enqueue_script('date-adapter', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js', array('chart-js'), '2.0.0', true);
-        wp_enqueue_script('orkla-frontend', ORKLA_PLUGIN_URL . 'assets/js/frontend.js', array('jquery', 'chart-js'), '1.0.2', true);
-        wp_enqueue_style('orkla-frontend', ORKLA_PLUGIN_URL . 'assets/css/frontend.css', array(), '1.0.2');
+        wp_enqueue_script('orkla-frontend', ORKLA_PLUGIN_URL . 'assets/js/frontend.js', array('jquery', 'chart-js'), '1.0.7', true);
+        wp_enqueue_style('orkla-frontend', ORKLA_PLUGIN_URL . 'assets/css/frontend.css', array(), '1.0.7');
         wp_localize_script('orkla-frontend', 'orkla_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('orkla_nonce')
@@ -254,8 +254,8 @@ class OrklaWaterLevel {
         
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js', array(), '3.9.1', true);
         wp_enqueue_script('date-adapter', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js', array('chart-js'), '2.0.0', true);
-    wp_enqueue_script('orkla-admin', ORKLA_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'chart-js'), '1.0.5', true);
-    wp_enqueue_style('orkla-admin', ORKLA_PLUGIN_URL . 'assets/css/admin.css', array(), '1.0.5');
+    wp_enqueue_script('orkla-admin', ORKLA_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'chart-js'), '1.0.7', true);
+    wp_enqueue_style('orkla-admin', ORKLA_PLUGIN_URL . 'assets/css/admin.css', array(), '1.0.7');
 
         $available_years = $this->get_available_years();
         $default_period = 'today';
