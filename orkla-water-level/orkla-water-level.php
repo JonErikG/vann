@@ -337,7 +337,8 @@ class OrklaWaterLevel {
         }
 
         if (isset($_GET['csv_fetch_now']) && $_GET['csv_fetch_now'] === '1') {
-            $summary = $this->fetch_csv_data(true);
+            $full_import = isset($_GET['full_import']) && $_GET['full_import'] === '1';
+            $summary = $this->fetch_csv_data(true, $full_import);
 
             if (is_array($summary)) {
                 $message = sprintf(
@@ -431,7 +432,9 @@ class OrklaWaterLevel {
                 echo '<pre>' . esc_html(print_r($latest_record, true)) . '</pre>';
             } else {
                 echo '<p style="color: red;"><strong>⚠ No data in database!</strong></p>';
-                echo '<p><a href="' . admin_url('admin.php?page=orkla-water-level') . '" class="button button-primary">Go to Dashboard to Fetch Data</a></p>';
+                echo '<p><strong>Action Required:</strong> Click the button below to import all historical data from the CSV file.</p>';
+                echo '<p><a href="' . admin_url('admin.php?page=orkla-water-level&csv_fetch_now=1&full_import=1') . '" class="button button-primary" onclick="return confirm(\'Import all historical data from CSV?\')">Run Full Historical Import</a></p>';
+                echo '<p style="font-size: 12px; color: #666;">Note: The regular "Run CSV Import" button only imports NEW data. Use "Full Historical Import" to populate the database initially.</p>';
             }
 
             $date_range = $wpdb->get_row("SELECT MIN(timestamp) as earliest, MAX(timestamp) as latest FROM $table_name");
@@ -1205,9 +1208,9 @@ class OrklaWaterLevel {
         }
     }
 
-    public function fetch_csv_data($force_refresh = true) {
-        error_log('Orkla Plugin: fetch_csv_data called (force_refresh=' . ($force_refresh ? 'true' : 'false') . ')');
-        
+    public function fetch_csv_data($force_refresh = true, $full_import = false) {
+        error_log('Orkla Plugin: fetch_csv_data called (force_refresh=' . ($force_refresh ? 'true' : 'false') . ', full_import=' . ($full_import ? 'true' : 'false') . ')');
+
         $sources = $this->get_csv_sources();
         error_log('Orkla Plugin: CSV sources found: ' . count($sources));
         
@@ -1320,8 +1323,8 @@ class OrklaWaterLevel {
             return $summary;
         }
 
-        $cutoff = $this->determine_import_cutoff_timestamp();
-        error_log('Orkla Plugin: Import cutoff timestamp: ' . ($cutoff ? date('Y-m-d H:i:s', $cutoff) : 'none'));
+        $cutoff = $full_import ? null : $this->determine_import_cutoff_timestamp();
+        error_log('Orkla Plugin: Import cutoff timestamp: ' . ($cutoff ? date('Y-m-d H:i:s', $cutoff) : 'none (full import)'));
         $records = $this->combine_source_records($source_values, $cutoff, $field_defaults, $timezone);
         error_log('Orkla Plugin: Combined ' . count($records) . ' records for import');
 

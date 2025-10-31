@@ -104,7 +104,8 @@ $notice_success = !empty($admin_messages['notices']) ? array_unique(array_map('w
                     <option value="temperature"><?php esc_html_e('Water Temperature', 'orkla-water-level'); ?></option>
                 </select>
                 <button id="refresh-data" class="button button-primary"><?php esc_html_e('Refresh Data', 'orkla-water-level'); ?></button>
-                <button id="fetch-now" class="button button-secondary"><?php esc_html_e('Run CSV Import', 'orkla-water-level'); ?></button>
+                <button id="fetch-now" class="button button-secondary"><?php esc_html_e('Run CSV Import (New Data)', 'orkla-water-level'); ?></button>
+                <button id="full-import" class="button button-secondary" style="background: #d63638; color: white; border-color: #d63638;" onclick="if(confirm('This will import ALL historical data from the CSV file. Continue?')) { location.href='<?php echo esc_url(admin_url('admin.php?page=orkla-water-level&csv_fetch_now=1&full_import=1')); ?>'; } return false;"><?php esc_html_e('Full Historical Import', 'orkla-water-level'); ?></button>
                 <button id="test-csv" class="button button-secondary" onclick="window.open('<?php echo esc_url(admin_url('admin.php?page=orkla-water-level&test_csv=1')); ?>', '_blank'); return false;"><?php esc_html_e('Diagnose CSV Sources', 'orkla-water-level'); ?></button>
                 <button id="test-single-line" class="button button-secondary" onclick="window.open('<?php echo esc_url(admin_url('admin.php?page=orkla-water-level&test_single=1')); ?>', '_blank'); return false;"><?php esc_html_e('Parse Sample Row', 'orkla-water-level'); ?></button>
                 <button id="test-remote" class="button button-secondary" onclick="window.open('<?php echo esc_url(admin_url('admin.php?page=orkla-water-level&test_remote_download=1')); ?>', '_blank'); return false;"><?php esc_html_e('Test Remote Download', 'orkla-water-level'); ?></button>
