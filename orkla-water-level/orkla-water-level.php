@@ -48,7 +48,6 @@ class OrklaWaterLevel {
     
     public function init() {
         // Include required files
-        require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-supabase-client.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-hydapi-client.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-health-monitor.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-import-optimizer.php');
@@ -1132,33 +1131,6 @@ class OrklaWaterLevel {
         $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : 'today';
         error_log('Orkla Plugin: Getting data for period: ' . $period);
 
-        // Use Supabase client
-        $supabase_client = new Orkla_Supabase_Client();
-        $data = $supabase_client->get_water_data_by_period($period);
-
-        if (isset($data['error'])) {
-            error_log('Orkla Plugin: Supabase error - ' . $data['error']);
-            wp_send_json_error($data['error']);
-            return;
-        }
-
-        error_log('Orkla Plugin: Returning ' . count($data) . ' records for period: ' . $period);
-
-        if (!empty($data)) {
-            error_log('Orkla Plugin: First timestamp: ' . $data[0]['timestamp']);
-            error_log('Orkla Plugin: Last timestamp: ' . $data[count($data) - 1]['timestamp']);
-        }
-
-        wp_send_json_success($data);
-        return;
-    }
-
-    public function ajax_get_water_data_legacy() {
-        error_log('Orkla Plugin: AJAX get_water_data_legacy called');
-
-        $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : 'today';
-        error_log('Orkla Plugin: Getting data for period (legacy): ' . $period);
-
         global $wpdb;
         $table_name = $wpdb->prefix . 'orkla_water_data';
 
@@ -1179,7 +1151,7 @@ class OrklaWaterLevel {
         } else {
             $latest_dt = null;
         }
-        
+
         if (preg_match('/^year:(\d{4})$/', $period, $matches)) {
             $year = (int) $matches[1];
             if ($year >= 1900 && $year <= 2100) {
@@ -1237,8 +1209,8 @@ class OrklaWaterLevel {
                     break;
             }
         }
-        
-     $query = "SELECT timestamp, 
+
+     $query = "SELECT timestamp,
                 water_level_1 as vannforing_brattset,
                 water_level_2 as vannforing_syrstad,
                 water_level_3 as vannforing_storsteinsholen,
@@ -1248,22 +1220,22 @@ class OrklaWaterLevel {
                 temperature_1 as vanntemperatur_syrstad,
                 COALESCE(water_level_1, 0) + COALESCE(flow_rate_1, 0) as rennebu_oppstroms,
                 COALESCE(water_level_3, 0) + COALESCE(flow_rate_3, 0) as nedstroms_svorkmo
-            FROM $table_name 
-            WHERE $where_clause 
+            FROM $table_name
+            WHERE $where_clause
             ORDER BY timestamp ASC";
-        
+
         $results = $wpdb->get_results($query);
-        
+
         if ($wpdb->last_error) {
             error_log('Orkla Plugin: Database error: ' . $wpdb->last_error);
             wp_send_json_error('Database error: ' . $wpdb->last_error);
             return;
         }
-        
+
         if (empty($results)) {
             error_log('Orkla Plugin: No data found, getting recent data');
             // Get all data instead
-         $query = "SELECT timestamp, 
+         $query = "SELECT timestamp,
                  water_level_1 as vannforing_brattset,
                  water_level_2 as vannforing_syrstad,
                  water_level_3 as vannforing_storsteinshølen,
@@ -1273,11 +1245,11 @@ class OrklaWaterLevel {
                  temperature_1 as vanntemperatur_syrstad,
                  COALESCE(water_level_1, 0) + COALESCE(flow_rate_1, 0) as rennebu_oppstroms,
                  COALESCE(water_level_3, 0) + COALESCE(flow_rate_3, 0) as nedstroms_svorkmo
-             FROM $table_name 
+             FROM $table_name
              ORDER BY timestamp ASC";
             $results = $wpdb->get_results($query);
         }
-        
+
         error_log('Orkla Plugin: Returning ' . count($results) . ' records for period: ' . $period);
         if (!empty($results)) {
             error_log('Orkla Plugin: First timestamp: ' . $results[0]->timestamp);
@@ -1288,7 +1260,7 @@ class OrklaWaterLevel {
         }
         wp_send_json_success($results);
     }
-    
+
     public function ajax_fetch_csv_data_now() {
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'orkla_nonce')) {
             wp_send_json_error(__('Security check failed.', 'orkla-water-level'));
