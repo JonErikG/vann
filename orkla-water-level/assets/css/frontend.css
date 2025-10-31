@@ -1,0 +1,802 @@
+/* Orkla Water Level Frontend Styles */
+.orkla-water-widget {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.widget-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.widget-controls label {
+    font-weight: 600;
+    color: #333;
+}
+
+.widget-controls select {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 14px;
+}
+
+.orkla-button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.orkla-button:hover {
+    background: #1d4ed8;
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.widget-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 24px;
+}
+
+.current-status {
+    text-align: right;
+}
+
+.current-level {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: #059669;
+    margin-bottom: 4px;
+}
+
+.update-time {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.widget-chart-container {
+    position: relative;
+    margin-bottom: 20px;
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.widget-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.info-item {
+    text-align: center;
+}
+
+.info-item .label {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.info-item .value {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Archive Widget Styles */
+.orkla-archive-widget {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.archive-widget-header h3 {
+    margin: 0 0 20px 0;
+    color: #1f2937;
+    font-size: 24px;
+}
+
+.archive-widget-controls {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.control-row select,
+.control-row input {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 14px;
+}
+
+.archive-widget-chart {
+    position: relative;
+    margin-bottom: 20px;
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.archive-widget-summary {
+    padding-top: 15px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.summary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-item .label {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.summary-item .value {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .widget-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .widget-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .current-status {
+        text-align: left;
+    }
+    
+    .control-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .widget-info {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .summary-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .widget-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading state */
+.orkla-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.orkla-loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e7eb;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error state */
+.orkla-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.orkla-missing {
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+/* Water meter shortcode */
+.orkla-meter-wrapper {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 18px;
+    box-shadow: 0 24px 60px -32px rgba(15, 23, 42, 0.35);
+    padding: 28px;
+    margin: 32px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.orkla-meter-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 18px 18px auto auto;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 65%);
+    pointer-events: none;
+}
+
+.orkla-meter-wrapper--empty {
+    box-shadow: none;
+    padding: 16px;
+}
+
+.orkla-meter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.orkla-meter-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.orkla-meter-title-icon {
+    font-size: 28px;
+}
+
+.orkla-meter-header h3 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.orkla-meter-updated {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: #475569;
+    text-align: right;
+}
+
+.orkla-meter-updated-primary {
+    font-weight: 600;
+    color: #1d4ed8;
+}
+
+.orkla-meter-updated-secondary {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.orkla-meter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+.orkla-meter-card {
+    background: rgba(248, 250, 252, 0.92);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 20px 40px -32px rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    position: relative;
+    overflow: hidden;
+}
+
+.orkla-meter-card::before {
+    content: '';
+    position: absolute;
+    inset: auto -30% -35% auto;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.18), transparent 70%);
+    pointer-events: none;
+    transform: translateY(40%);
+}
+
+.orkla-meter-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+}
+
+.orkla-meter-card-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.orkla-meter-card-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.orkla-meter-card-description {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.orkla-meter-card-visual {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 12px;
+}
+
+.orkla-meter-disc {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.45) 0%, rgba(148, 163, 184, 0.16) 100%);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.4), inset 0 0 0 10px rgba(248, 250, 252, 0.75), 0 24px 40px -30px rgba(15, 23, 42, 0.55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    isolation: isolate;
+}
+
+.orkla-meter-disc::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.95) 0%, rgba(226, 232, 240, 0.85) 70%, rgba(148, 163, 184, 0.3) 100%);
+    box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+    z-index: 1;
+}
+
+.orkla-meter-disc-inner {
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.82) 100%);
+    box-shadow: inset 0 -18px 28px -26px rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.orkla-meter-disc-liquid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, var(--accent, #2563eb) 90%);
+    filter: saturate(1.08);
+    overflow: hidden;
+}
+
+.orkla-meter-disc-wave {
+    position: absolute;
+    left: -60%;
+    bottom: -18px;
+    width: 220%;
+    height: 130px;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.65) 15%, transparent 60%);
+    opacity: 0.45;
+}
+
+.orkla-meter-disc-wave--front {
+    animation: orklaWaveFront 6.5s linear infinite;
+}
+
+.orkla-meter-disc-wave--back {
+    opacity: 0.32;
+    animation: orklaWaveBack 9s linear infinite;
+}
+
+.orkla-meter-disc-reading {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    color: #0f172a;
+    text-shadow: 0 0 22px rgba(255, 255, 255, 0.8);
+}
+
+.orkla-meter-disc-value {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.orkla-meter-disc-unit {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.orkla-meter-disc-empty {
+    position: relative;
+    z-index: 3;
+    font-size: 13px;
+    color: #94a3b8;
+    text-align: center;
+    padding: 0 12px;
+}
+
+.orkla-meter-disc--empty .orkla-meter-disc-liquid {
+    background: linear-gradient(180deg, rgba(148, 163, 184, 0.3) 0%, rgba(148, 163, 184, 0.45) 100%);
+}
+
+.orkla-meter-disc--empty .orkla-meter-disc-wave {
+    display: none;
+}
+
+.orkla-meter-disc--empty .orkla-meter-disc-reading {
+    display: none;
+}
+
+.orkla-meter-empty {
+    margin: 0;
+    color: #64748b;
+    font-style: italic;
+}
+
+.orkla-thermometer-card {
+    background: rgba(15, 23, 42, 0.03);
+    border-radius: 20px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: relative;
+    z-index: 1;
+}
+
+.orkla-thermometer-card--empty {
+    background: rgba(239, 68, 68, 0.08);
+    color: #b91c1c;
+}
+
+.orkla-thermometer-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.orkla-thermometer-icon {
+    font-size: 28px;
+}
+
+.orkla-thermometer-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.orkla-thermometer-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.orkla-thermometer-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: #f97316;
+}
+
+.orkla-thermometer-missing {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+
+.orkla-thermometer-body {
+    display: flex;
+    align-items: flex-end;
+    gap: 18px;
+}
+
+.orkla-thermometer-column {
+    position: relative;
+    width: 82px;
+    height: 240px;
+    border-radius: 26px;
+    background: linear-gradient(180deg, rgba(148, 163, 184, 0.15) 0%, rgba(148, 163, 184, 0.28) 100%);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 58px;
+}
+
+.orkla-thermometer-mercury {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 58px;
+    height: 0;
+    border-radius: 18px 18px 6px 6px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, var(--accent, #38bdf8) 100%);
+    overflow: hidden;
+}
+
+.orkla-thermometer-wave {
+    position: absolute;
+    left: -60%;
+    bottom: -12px;
+    width: 220%;
+    height: 90px;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.7) 12%, transparent 60%);
+    opacity: 0.45;
+}
+
+.orkla-thermometer-wave--front {
+    animation: orklaWaveFront 5.5s linear infinite;
+}
+
+.orkla-thermometer-wave--back {
+    opacity: 0.32;
+    animation: orklaWaveBack 8s linear infinite;
+}
+
+.orkla-thermometer-scale {
+    position: absolute;
+    inset: 20px 0 58px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.orkla-thermometer-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.orkla-thermometer-percent {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+
+.orkla-thermometer-range {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.orkla-thermometer-bulb {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 12px;
+    height: 46px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent, #38bdf8) 0%, rgba(15, 23, 42, 0.65) 100%);
+    box-shadow: inset 0 0 14px rgba(255, 255, 255, 0.45), 0 16px 24px -18px rgba(15, 23, 42, 0.55);
+}
+
+.orkla-thermometer-bulb-glow {
+    position: absolute;
+    inset: 8px 12px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.65) 0%, transparent 70%);
+}
+
+.orkla-meter-disc.is-animated .orkla-meter-disc-liquid {
+    animation: orklaGaugeFill 1.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.orkla-thermometer-mercury.is-animated {
+    animation: orklaThermoFill 1.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes orklaWaveFront {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-35%);
+    }
+}
+
+@keyframes orklaWaveBack {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(35%);
+    }
+}
+
+@keyframes orklaGaugeFill {
+    from {
+        height: 0;
+    }
+    to {
+        height: var(--fill-target, 0%);
+    }
+}
+
+@keyframes orklaThermoFill {
+    from {
+        height: 0;
+    }
+    to {
+        height: var(--fill-target, 0%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .orkla-meter-disc.is-animated .orkla-meter-disc-liquid,
+    .orkla-thermometer-mercury.is-animated {
+        animation: none;
+        height: var(--fill-target, 0%);
+        opacity: 1;
+    }
+
+    .orkla-meter-disc-wave,
+    .orkla-thermometer-wave {
+        animation: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .orkla-meter-wrapper {
+        padding: 20px;
+    }
+
+    .orkla-meter-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .orkla-meter-header h3 {
+        font-size: 22px;
+    }
+
+    .orkla-meter-disc {
+        width: 130px;
+        height: 130px;
+    }
+
+    .orkla-meter-disc-inner {
+        inset: 12px;
+    }
+
+    .orkla-meter-disc-value {
+        font-size: 26px;
+    }
+
+    .orkla-thermometer-body {
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .orkla-thermometer-meta {
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .orkla-meter-header {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .orkla-meter-updated {
+        text-align: left;
+    }
+
+    .orkla-meter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .orkla-meter-disc {
+        width: 118px;
+        height: 118px;
+    }
+
+    .orkla-meter-disc-inner {
+        inset: 10px;
+    }
+
+    .orkla-meter-disc-value {
+        font-size: 24px;
+    }
+}

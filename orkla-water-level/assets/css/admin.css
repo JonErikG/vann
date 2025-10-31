@@ -1,0 +1,309 @@
+/* Orkla Water Level Admin Styles */
+.orkla-admin-container {
+    max-width: 1200px;
+    margin: 20px 0;
+}
+
+.orkla-controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.orkla-controls h2 {
+    margin-top: 0;
+    color: #1f2937;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.control-group select {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+}
+
+.orkla-chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.orkla-chart-container canvas {
+    max-width: 100%;
+    height: 400px !important;
+}
+
+.orkla-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+.orkla-shortcodes .orkla-shortcode-attributes {
+    margin: 6px 0 0 18px;
+    padding: 0;
+    list-style: disc;
+    color: #374151;
+}
+
+.orkla-shortcodes .orkla-shortcode-attributes li {
+    margin: 0 0 4px;
+}
+
+.orkla-shortcodes code {
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+    text-align: center;
+    border-left: 4px solid #2563eb;
+}
+
+.stat-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.stat-card span {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.orkla-info {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.orkla-info h3 {
+    margin-top: 0;
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.orkla-info p {
+    margin: 8px 0;
+    color: #374151;
+}
+
+/* Archive Page Styles */
+.orkla-archive-container {
+    max-width: 1200px;
+    margin: 20px 0;
+}
+
+.archive-controls {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.archive-results {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+#archive-chart {
+    max-width: 100%;
+    height: 500px !important;
+}
+
+.archive-summary {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.archive-summary h3 {
+    margin-top: 0;
+    color: #1f2937;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f9fafb;
+    border-radius: 4px;
+}
+
+.stat-item label {
+    font-weight: 600;
+    color: #374151;
+}
+
+.stat-item span {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.quick-links {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.quick-links h3 {
+    margin-top: 0;
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.quick-link-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.quick-search {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.quick-search:hover {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+.quick-search.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .control-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .orkla-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .summary-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-link-buttons {
+        flex-direction: column;
+    }
+    
+    .stat-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .orkla-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading and Error States */
+.orkla-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.orkla-loading::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e5e7eb;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.orkla-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin: 15px 0;
+}
+
+.orkla-missing {
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    padding: 15px 20px;
+    border-radius: 6px;
+    margin: 15px 0;
+}
+
+.button.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
