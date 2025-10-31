@@ -2,6 +2,16 @@ jQuery(document).ready(function($) {
     console.log('Orkla Frontend JS loaded');
     console.log('AJAX URL:', orkla_ajax.ajax_url);
     console.log('Nonce:', orkla_ajax.nonce);
+
+    // Check if Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is NOT loaded! Cannot render graphs.');
+        $('.widget-chart-container').html('<div style="padding: 40px; text-align: center; background: #f8d7da; border: 2px solid #dc3545; border-radius: 8px; color: #721c24;"><h3>⚠ Chart.js Not Loaded</h3><p>The Chart.js library failed to load. Please contact site administrator.</p></div>');
+        return;
+    } else {
+        console.log('Chart.js loaded successfully (version ' + Chart.version + ')');
+    }
+
     let widgetChart = null;
     // Initialize water level widget
     if ($('#widget-chart').length) {

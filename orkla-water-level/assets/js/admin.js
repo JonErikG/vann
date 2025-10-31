@@ -2,10 +2,19 @@ jQuery(document).ready(function($) {
     console.log('Orkla Admin JS loaded');
     console.log('AJAX URL:', orkla_admin_ajax.ajax_url);
     console.log('Nonce:', orkla_admin_ajax.nonce);
-    
+
+    // Check if Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is NOT loaded! Cannot render graphs.');
+        $('.orkla-chart-container').html('<div style="padding: 40px; text-align: center; background: #f8d7da; border: 2px solid #dc3545; border-radius: 8px; color: #721c24;"><h3>⚠ Chart.js Not Loaded</h3><p>The Chart.js library failed to load from CDN. This may be due to:</p><ul style="text-align: left; max-width: 500px; margin: 20px auto;"><li>CDN blocked by firewall/adblocker</li><li>Network connection issue</li><li>Script loading order problem</li></ul><p><strong>Solution:</strong> Check browser console (F12) for errors.</p></div>');
+        return;
+    } else {
+        console.log('Chart.js loaded successfully (version ' + Chart.version + ')');
+    }
+
     let waterLevelChart = null;
     let chartData = [];
-    
+
     // Initialize admin page
     if ($('#vannforing-chart').length) {
         console.log('Initializing admin chart');
