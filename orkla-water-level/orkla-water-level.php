@@ -1037,11 +1037,15 @@ class OrklaWaterLevel {
         
         // Ensure table exists and has data
         $this->ensure_test_data();
-        
+
+        $total_rows = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+        error_log('Orkla Plugin: Total rows in database: ' . $total_rows);
+
         $where_clause = '';
         $group_by = '';
 
         $latest_timestamp = $wpdb->get_var("SELECT MAX(timestamp) FROM $table_name");
+        error_log('Orkla Plugin: Latest timestamp in database: ' . ($latest_timestamp ? $latest_timestamp : 'none'));
         if ($latest_timestamp) {
             try {
                 $latest_dt = new DateTime($latest_timestamp);
@@ -1259,7 +1263,9 @@ class OrklaWaterLevel {
                 continue;
             }
 
+            error_log('Orkla Plugin: Parsing CSV for field: ' . $field);
             $parsed = $this->parse_csv_source($path, $config, $timezone);
+            error_log('Orkla Plugin: Parsed ' . count($parsed['values']) . ' values for field: ' . $field);
             $source_values[$field] = $parsed['values'];
 
             $source_summaries[$field] = array(
@@ -1315,7 +1321,9 @@ class OrklaWaterLevel {
         }
 
         $cutoff = $this->determine_import_cutoff_timestamp();
+        error_log('Orkla Plugin: Import cutoff timestamp: ' . ($cutoff ? date('Y-m-d H:i:s', $cutoff) : 'none'));
         $records = $this->combine_source_records($source_values, $cutoff, $field_defaults, $timezone);
+        error_log('Orkla Plugin: Combined ' . count($records) . ' records for import');
 
         if (empty($records)) {
             $summary = array(
@@ -1332,7 +1340,9 @@ class OrklaWaterLevel {
             return $summary;
         }
 
+        error_log('Orkla Plugin: Starting database import of ' . count($records) . ' records');
         $import_result = $this->import_combined_records($records);
+        error_log('Orkla Plugin: Import completed - Imported: ' . $import_result['imported'] . ', Updated: ' . $import_result['updated'] . ', Skipped: ' . $import_result['skipped']);
 
         $summary = array(
             'imported'     => $import_result['imported'],
