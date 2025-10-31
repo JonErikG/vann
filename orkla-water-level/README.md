@@ -2,21 +2,57 @@
 
 A comprehensive WordPress plugin that monitors water level data from the Orkla river, providing real-time visualization and historical archive functionality.
 
+## Version 1.0.8 - Latest Updates
+
+### 🚀 Major Fixes & Improvements
+
+- **Local Chart.js Bundle**: Chart.js now loads from local files instead of CDN, preventing issues with firewalls and ad blockers
+- **Enhanced Error Handling**: Comprehensive error messages with troubleshooting guidance
+- **Improved Script Loading**: Fixed script dependency order and eliminated duplicate localizations
+- **Better Diagnostics**: Added detailed console logging and visual error indicators
+- **Cache Busting**: Dynamic version numbers ensure latest code always loads
+
+### 🔧 What Was Fixed
+
+1. **Graph Not Displaying Issue**: Chart.js library is now bundled locally at `assets/js/vendor/`, eliminating CDN blocking issues
+2. **Script Conflicts**: Removed duplicate `wp_localize_script` calls that were causing conflicts
+3. **Dependency Chain**: Proper loading order: jQuery → Chart.js → Date Adapter → Custom Scripts
+4. **Error Messages**: Clear, actionable error messages when things go wrong
+
 ## Features
 
 - **Hourly Data Fetching**: Automatically fetches CSV data from https://orklavannstand.online/VannforingOrkla.csv every hour
-- **Interactive Charts**: Beautiful, responsive charts similar to https://orklavannstand.online/vannstand/
+- **Interactive Charts**: Beautiful, responsive charts with Chart.js 3.9.1
 - **Multiple Time Periods**: View data for today, last week, last month, or last year
 - **Archive System**: Complete historical data with search by specific date, month, or year
 - **Admin Dashboard**: Full admin interface for monitoring and managing data
 - **Shortcodes**: Easy integration into any WordPress page or post
 - **Responsive Design**: Works perfectly on all devices
+- **Local Asset Fallback**: All critical JavaScript libraries bundled locally
 
 ## Installation
 
 1. Upload the `orkla-water-level` folder to your WordPress plugins directory (`/wp-content/plugins/`)
 2. Activate the plugin through the WordPress admin panel
 3. The plugin will automatically create the necessary database tables and start fetching data
+4. Go to Water Level → Dashboard and run "Full Historical Import" to load data
+
+## Troubleshooting
+
+### Graph Not Showing?
+
+1. **Health Check**: Upload `test-plugin-health.php` to your WordPress root and access it via browser
+2. **Check Console**: Press F12 and look for error messages
+3. **Clear Cache**: Hard refresh with Ctrl+Shift+R
+4. **Import Data**: Go to Water Level → Debug Status and run "Full Historical Import"
+
+### Common Issues
+
+- **"Chart.js Not Loaded" Error**: Should be fixed in v1.0.8 with local Chart.js files
+- **"No Data Available" Error**: Run the Full Historical Import from admin dashboard
+- **AJAX Errors**: Check WordPress debug.log and verify plugin is activated
+
+See `TROUBLESHOOTING.md`, `QUICK-FIX.md`, and `GRAPH-NOT-SHOWING.md` for detailed diagnostic guides.
 
 ## Database Schema
 

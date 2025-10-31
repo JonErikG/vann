@@ -1,15 +1,25 @@
 jQuery(document).ready(function($) {
     console.log('Orkla Admin JS loaded');
-    console.log('AJAX URL:', orkla_admin_ajax.ajax_url);
-    console.log('Nonce:', orkla_admin_ajax.nonce);
 
-    // Check if Chart.js is loaded
+    if (typeof orkla_admin_ajax === 'undefined') {
+        console.error('✗ orkla_admin_ajax is not defined! Scripts may not be enqueued properly.');
+        $('.orkla-chart-container').html('<div class="orkla-error" style="padding: 40px; text-align: center; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; color: #856404;"><h3>⚠ Configuration Error</h3><p>Admin scripts are not properly configured. Please refresh the page.</p></div>');
+        return;
+    }
+
+    console.log('✓ AJAX URL:', orkla_admin_ajax.ajax_url);
+    console.log('✓ Nonce:', orkla_admin_ajax.nonce);
+    console.log('✓ Available Years:', orkla_admin_ajax.availableYears);
+    console.log('✓ Default Period:', orkla_admin_ajax.defaultPeriod);
+
     if (typeof Chart === 'undefined') {
-        console.error('Chart.js is NOT loaded! Cannot render graphs.');
-        $('.orkla-chart-container').html('<div style="padding: 40px; text-align: center; background: #f8d7da; border: 2px solid #dc3545; border-radius: 8px; color: #721c24;"><h3>⚠ Chart.js Not Loaded</h3><p>The Chart.js library failed to load from CDN. This may be due to:</p><ul style="text-align: left; max-width: 500px; margin: 20px auto;"><li>CDN blocked by firewall/adblocker</li><li>Network connection issue</li><li>Script loading order problem</li></ul><p><strong>Solution:</strong> Check browser console (F12) for errors.</p></div>');
+        console.error('✗ Chart.js is NOT loaded! Cannot render graphs.');
+        console.error('This indicates the Chart.js library failed to load.');
+        console.error('Check Network tab in DevTools to see if chart.min.js loaded successfully.');
+        $('.orkla-chart-container').html('<div class="orkla-error" style="padding: 40px; text-align: center; background: #f8d7da; border: 2px solid #dc3545; border-radius: 8px; color: #721c24;"><h3>⚠ Chart.js Not Loaded</h3><p>The Chart.js library failed to load.</p><p style="margin-top: 15px;"><strong>This may be due to:</strong></p><ul style="text-align: left; max-width: 500px; margin: 20px auto; list-style: disc; padding-left: 20px;"><li>CDN blocked by firewall/adblocker</li><li>Network connection issue</li><li>Script loading order problem</li><li>File permissions issue</li></ul><p style="margin-top: 15px;"><strong>Solution:</strong></p><ul style="text-align: left; max-width: 500px; margin: 15px auto; list-style: disc; padding-left: 20px;"><li>Open browser console (F12) and check Network tab</li><li>Look for failed requests to chart.min.js</li><li>Try clearing browser cache (Ctrl+Shift+R)</li><li>Disable ad blockers temporarily</li></ul></div>');
         return;
     } else {
-        console.log('Chart.js loaded successfully (version ' + Chart.version + ')');
+        console.log('✓ Chart.js loaded successfully (version ' + Chart.version + ')');
     }
 
     let waterLevelChart = null;
@@ -242,25 +252,45 @@ jQuery(document).ready(function($) {
                     nonce: orkla_admin_ajax.nonce
                 },
                 success: function(response) {
-                    console.log('Admin AJAX response:', response);
+                    console.log('✓ Admin AJAX response:', response);
                     if (response.success && response.data) {
                         chartData = response.data || [];
-                        console.log('Chart data loaded, total records:', chartData.length);
+                        console.log('✓ Chart data loaded, total records:', chartData.length);
                         if (chartData.length > 0) {
-                            console.log('First record:', chartData[0]);
-                            console.log('Last record:', chartData[chartData.length - 1]);
+                            console.log('✓ First record:', chartData[0]);
+                            console.log('✓ Last record:', chartData[chartData.length - 1]);
+                            console.log('✓ Time range:', chartData[0].timestamp, 'to', chartData[chartData.length - 1].timestamp);
+                        } else {
+                            console.warn('⚠ No data returned for period:', period);
                         }
                         updateChart(chartData);
                         updateStats(chartData);
                     } else {
-                        console.error('Error in response:', response);
-                        showError('Error loading data: ' + (response.data || 'Unknown error'));
+                        console.error('✗ Error in response:', response);
+                        var errorMsg = response.data || 'Unknown error';
+                        showError('<strong>Error loading data:</strong> ' + errorMsg + '<br><br>Check browser console for details.');
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error('Admin AJAX request failed:', xhr, status, error);
-                    console.error('Response text:', xhr.responseText);
-                    showError('Failed to load vannføring data: ' + error);
+                    console.error('✗ Admin AJAX request failed:', status, error);
+                    console.error('✗ Response text:', xhr.responseText);
+                    console.error('✗ Status code:', xhr.status);
+                    console.error('✗ Full XHR object:', xhr);
+
+                    var errorDetail = '';
+                    if (xhr.status === 0) {
+                        errorDetail = 'Network error - Cannot connect to server. Check your internet connection.';
+                    } else if (xhr.status === 404) {
+                        errorDetail = 'AJAX endpoint not found (404). Plugin may not be activated correctly.';
+                    } else if (xhr.status === 500) {
+                        errorDetail = 'Server error (500). Check WordPress error logs in wp-content/debug.log';
+                    } else if (xhr.status === 403) {
+                        errorDetail = 'Access forbidden (403). Nonce verification may have failed. Try refreshing the page.';
+                    } else {
+                        errorDetail = 'Error: ' + error + ' (Status: ' + xhr.status + ')';
+                    }
+
+                    showError('<strong>Failed to load vannføring data</strong><br><br>' + errorDetail + '<br><br>Check browser console (F12) and WordPress debug.log for more details.');
                 }
             });
         }
@@ -619,13 +649,13 @@ jQuery(document).ready(function($) {
         }
         
         function showError(message) {
-            console.error('Admin error:', message);
+            console.error('✗ Admin error:', message);
             $('#current-level, #avg-level, #max-level, #min-level').text('--');
 
             const container = $('.orkla-chart-container');
             container.find('.orkla-error').remove();
             container.find('.orkla-missing').remove();
-            container.append('<div class="orkla-error">' + message + '</div>');
+            container.append('<div class="orkla-error" style="padding: 30px; background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; color: #856404; margin: 20px 0;">' + message + '</div>');
         }
 
         function renderDatasetAvailability(missingSeries) {
