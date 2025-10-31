@@ -1161,6 +1161,9 @@ class OrklaWaterLevel {
         if (!empty($results)) {
             error_log('Orkla Plugin: First timestamp: ' . $results[0]->timestamp);
             error_log('Orkla Plugin: Last timestamp: ' . end($results)->timestamp);
+            error_log('Orkla Plugin: Sample record: ' . json_encode($results[0]));
+        } else {
+            error_log('Orkla Plugin: WARNING - No results to return!');
         }
         wp_send_json_success($results);
     }
