@@ -48,6 +48,7 @@ class OrklaWaterLevel {
     
     public function init() {
         // Include required files
+        require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-supabase-client.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-hydapi-client.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-health-monitor.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-import-optimizer.php');
@@ -1120,22 +1121,46 @@ class OrklaWaterLevel {
     
     public function ajax_get_water_data() {
         error_log('Orkla Plugin: AJAX get_water_data called');
-        
+
         // Verify nonce
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'orkla_nonce')) {
             error_log('Orkla Plugin: Nonce verification failed');
             wp_send_json_error('Security check failed');
             return;
         }
-        
+
         $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : 'today';
         error_log('Orkla Plugin: Getting data for period: ' . $period);
-        
+
+        // Use Supabase client
+        $supabase_client = new Orkla_Supabase_Client();
+        $data = $supabase_client->get_water_data_by_period($period);
+
+        if (isset($data['error'])) {
+            error_log('Orkla Plugin: Supabase error - ' . $data['error']);
+            wp_send_json_error($data['error']);
+            return;
+        }
+
+        error_log('Orkla Plugin: Returning ' . count($data) . ' records for period: ' . $period);
+
+        if (!empty($data)) {
+            error_log('Orkla Plugin: First timestamp: ' . $data[0]['timestamp']);
+            error_log('Orkla Plugin: Last timestamp: ' . $data[count($data) - 1]['timestamp']);
+        }
+
+        wp_send_json_success($data);
+        return;
+    }
+
+    public function ajax_get_water_data_legacy() {
+        error_log('Orkla Plugin: AJAX get_water_data_legacy called');
+
+        $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : 'today';
+        error_log('Orkla Plugin: Getting data for period (legacy): ' . $period);
+
         global $wpdb;
         $table_name = $wpdb->prefix . 'orkla_water_data';
-        
-        // Ensure table exists and has data
-        $this->ensure_test_data();
 
         $total_rows = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
         error_log('Orkla Plugin: Total rows in database: ' . $total_rows);
