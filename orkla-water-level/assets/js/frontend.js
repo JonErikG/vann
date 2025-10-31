@@ -23,6 +23,10 @@ jQuery(document).ready(function($) {
         function loadWaterLevelData(selectedPeriod) {
             console.log('Loading water level data for period:', selectedPeriod);
             $('.current-level').text('Loading...');
+
+            console.log('DEBUG: AJAX URL:', orkla_ajax.ajax_url);
+            console.log('DEBUG: Nonce:', orkla_ajax.nonce);
+
             $.ajax({
                 url: orkla_ajax.ajax_url,
                 method: 'POST',
@@ -35,17 +39,22 @@ jQuery(document).ready(function($) {
                     console.log('AJAX response:', response);
                     if (response.success && response.data) {
                         console.log('Data received:', response.data.length, 'records');
-                        updateWaterLevelChart(response.data);
-                        updateCurrentStatus(response.data);
+                        if (response.data.length === 0) {
+                            showError('No data available for this period. Please check the Debug Status page in the admin panel.');
+                        } else {
+                            updateWaterLevelChart(response.data);
+                            updateCurrentStatus(response.data);
+                        }
                     } else {
                         console.error('Error in response:', response);
-                        showError('Error loading data: ' + (response.data || 'Unknown error'));
+                        showError('Error loading data: ' + (response.data || 'Unknown error') + '<br><br>Check browser console for details or visit the Debug Status page in admin.');
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error('AJAX request failed:', xhr, status, error);
                     console.error('Response text:', xhr.responseText);
-                    showError('Failed to load vannføring data: ' + error);
+                    console.error('Status code:', xhr.status);
+                    showError('Failed to load vannføring data: ' + error + '<br>Status: ' + xhr.status + '<br><br>Check browser console for details or visit the Debug Status page in admin.');
                 }
             });
         }

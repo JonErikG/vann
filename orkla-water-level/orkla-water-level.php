@@ -27,6 +27,7 @@ if (!defined('ORKLA_PLUGIN_PATH')) {
 class OrklaWaterLevel {
     private static $scripts_enqueued = false;
     const ADMIN_FLASH_KEY = 'orkla_dataset_flash';
+    const DEBUG_MODE = true; // Enable debug mode
     protected $admin_messages = array(
         'errors'  => array(),
         'notices' => array(),
@@ -296,6 +297,15 @@ class OrklaWaterLevel {
             array($this, 'admin_shortcodes_page')
         );
 
+        add_submenu_page(
+            'orkla-water-level',
+            __('Debug Status', 'orkla-water-level'),
+            __('Debug Status', 'orkla-water-level'),
+            'manage_options',
+            'orkla-water-level-debug',
+            array($this, 'admin_debug_page')
+        );
+
         return $hook;
     }
 
@@ -391,6 +401,95 @@ class OrklaWaterLevel {
         $csv_base_path = $this->get_csv_base_path();
 
         include(ORKLA_WATER_LEVEL_PATH . 'templates/admin-page.php');
+    }
+
+    public function admin_debug_page() {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have permission to access this page.', 'orkla-water-level'));
+        }
+
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'orkla_water_data';
+
+        echo '<div class="wrap">';
+        echo '<h1>Orkla Water Level Debug Status</h1>';
+
+        echo '<div class="orkla-debug-section">';
+        echo '<h2>Database Status</h2>';
+
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name;
+        echo '<p><strong>Table exists:</strong> ' . ($table_exists ? '✓ Yes' : '✗ No') . '</p>';
+
+        if ($table_exists) {
+            $total_rows = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+            echo '<p><strong>Total records:</strong> ' . esc_html($total_rows) . '</p>';
+
+            $latest_record = $wpdb->get_row("SELECT * FROM $table_name ORDER BY timestamp DESC LIMIT 1");
+            if ($latest_record) {
+                echo '<p><strong>Latest timestamp:</strong> ' . esc_html($latest_record->timestamp) . '</p>';
+                echo '<p><strong>Latest data sample:</strong></p>';
+                echo '<pre>' . esc_html(print_r($latest_record, true)) . '</pre>';
+            } else {
+                echo '<p style="color: red;"><strong>⚠ No data in database!</strong></p>';
+                echo '<p><a href="' . admin_url('admin.php?page=orkla-water-level') . '" class="button button-primary">Go to Dashboard to Fetch Data</a></p>';
+            }
+
+            $date_range = $wpdb->get_row("SELECT MIN(timestamp) as earliest, MAX(timestamp) as latest FROM $table_name");
+            if ($date_range) {
+                echo '<p><strong>Data range:</strong> ' . esc_html($date_range->earliest) . ' to ' . esc_html($date_range->latest) . '</p>';
+            }
+        } else {
+            echo '<p style="color: red;"><strong>⚠ Database table does not exist!</strong></p>';
+            echo '<p>Try deactivating and reactivating the plugin.</p>';
+        }
+
+        echo '</div>';
+
+        echo '<div class="orkla-debug-section" style="margin-top: 30px;">';
+        echo '<h2>WordPress Environment</h2>';
+        echo '<p><strong>AJAX URL:</strong> ' . esc_html(admin_url('admin-ajax.php')) . '</p>';
+        echo '<p><strong>Plugin URL:</strong> ' . esc_html(ORKLA_PLUGIN_URL) . '</p>';
+        echo '<p><strong>Plugin Path:</strong> ' . esc_html(ORKLA_PLUGIN_PATH) . '</p>';
+        echo '<p><strong>Debug Mode:</strong> ' . (self::DEBUG_MODE ? 'Enabled' : 'Disabled') . '</p>';
+        echo '</div>';
+
+        echo '<div class="orkla-debug-section" style="margin-top: 30px;">';
+        echo '<h2>Registered Actions</h2>';
+        echo '<p><strong>AJAX Handler (ajax):</strong> ' . (has_action('wp_ajax_get_water_data') ? '✓ Registered' : '✗ Not registered') . '</p>';
+        echo '<p><strong>AJAX Handler (nopriv):</strong> ' . (has_action('wp_ajax_nopriv_get_water_data') ? '✓ Registered' : '✗ Not registered') . '</p>';
+        echo '<p><strong>Cron scheduled:</strong> ' . (wp_next_scheduled('orkla_fetch_data_hourly') ? '✓ Yes (Next: ' . date('Y-m-d H:i:s', wp_next_scheduled('orkla_fetch_data_hourly')) . ')' : '✗ No') . '</p>';
+        echo '</div>';
+
+        echo '<div class="orkla-debug-section" style="margin-top: 30px;">';
+        echo '<h2>Test AJAX Request</h2>';
+        echo '<button id="test-ajax-button" class="button button-primary">Test AJAX Data Fetch</button>';
+        echo '<div id="test-ajax-result" style="margin-top: 10px;"></div>';
+        echo '</div>';
+
+        echo '<script>
+        jQuery(document).ready(function($) {
+            $("#test-ajax-button").on("click", function() {
+                $("#test-ajax-result").html("<p>Loading...</p>");
+                $.ajax({
+                    url: "' . admin_url('admin-ajax.php') . '",
+                    method: "POST",
+                    data: {
+                        action: "get_water_data",
+                        period: "today",
+                        nonce: "' . wp_create_nonce('orkla_nonce') . '"
+                    },
+                    success: function(response) {
+                        $("#test-ajax-result").html("<pre>" + JSON.stringify(response, null, 2) + "</pre>");
+                    },
+                    error: function(xhr, status, error) {
+                        $("#test-ajax-result").html("<p style=\"color: red;\">Error: " + error + "</p><pre>" + xhr.responseText + "</pre>");
+                    }
+                });
+            });
+        });
+        </script>';
+
+        echo '</div>';
     }
 
     public function test_csv_fetch() {
