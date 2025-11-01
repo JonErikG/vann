@@ -48,13 +48,9 @@ class OrklaWaterLevel {
     
     public function init() {
         // Include required files
-        require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-supabase-client.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-hydapi-client.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-health-monitor.php');
         require_once(ORKLA_WATER_LEVEL_PATH . 'includes/class-orkla-import-optimizer.php');
-
-        // Initialize Supabase client
-        $this->supabase_client = new Orkla_Supabase_Client();
 
         // Add AJAX handlers - these must be registered early
         add_action('wp_ajax_get_water_data', array($this, 'ajax_get_water_data'));
@@ -192,17 +188,6 @@ class OrklaWaterLevel {
             return $years_cache;
         }
 
-        // Try Supabase first
-        if (isset($this->supabase_client) && $this->supabase_client->is_configured()) {
-            $years = $this->supabase_client->get_available_years();
-
-            if (!empty($years)) {
-                $years_cache = $years;
-                return $years_cache;
-            }
-        }
-
-        // Fallback to WordPress database
         global $wpdb;
         $table_name = $wpdb->prefix . 'orkla_water_data';
 
@@ -950,7 +935,7 @@ class OrklaWaterLevel {
             'period' => 'today',
             'height' => '400px',
             'show_controls' => 'true',
-            'stations' => 'vannforing_brattset,vannforing_syrstad,vannforing_storsteinsholen,produksjon_brattset,produksjon_grana,produksjon_svorkmo',
+            'stations' => 'water_level_1,water_level_2,water_level_3,flow_rate_1,flow_rate_2,flow_rate_3',
             'show_temperature' => 'true',
             'reference_max' => ''
         ), $atts, 'orkla_water_display');
@@ -980,7 +965,7 @@ class OrklaWaterLevel {
 
     public function water_meter_shortcode_legacy($atts) {
         $atts = shortcode_atts(array(
-            'stations' => 'vannforing_brattset,vannforing_syrstad,vannforing_storsteinsholen,produksjon_brattset,produksjon_grana,produksjon_svorkmo',
+            'stations' => 'water_level_1,water_level_2,water_level_3,flow_rate_1,flow_rate_2,flow_rate_3',
             'show_temperature' => 'true',
             'reference_max' => ''
         ), $atts, 'orkla_water_meter');
@@ -1051,7 +1036,7 @@ class OrklaWaterLevel {
         }
         unset($card);
 
-        $timestamp = isset($snapshot['measured_at']) ? $snapshot['measured_at'] : (isset($snapshot['timestamp']) ? $snapshot['timestamp'] : null);
+        $timestamp = isset($snapshot['timestamp']) ? $snapshot['timestamp'] : null;
         $updated_at = null;
         $updated_relative = null;
 
@@ -1070,7 +1055,7 @@ class OrklaWaterLevel {
         $temperature_card = null;
 
         if ($show_temperature) {
-            $temperature_raw = isset($snapshot['water_temperature']) ? $snapshot['water_temperature'] : (isset($snapshot['temperature_1']) ? $snapshot['temperature_1'] : null);
+            $temperature_raw = isset($snapshot['temperature_1']) ? $snapshot['temperature_1'] : null;
             $temperature_value = $temperature_raw !== null ? $this->normalize_temperature_value($temperature_raw) : null;
 
             $min_temp = apply_filters('orkla_water_meter_temperature_min', 0);
@@ -1146,26 +1131,6 @@ class OrklaWaterLevel {
 
         $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : 'today';
         error_log('Orkla Plugin: Getting data for period: ' . $period);
-
-        // Try Supabase first
-        if (isset($this->supabase_client) && $this->supabase_client->is_configured()) {
-            $results = $this->supabase_client->get_water_data($period);
-
-            if (!isset($results['error']) && !empty($results)) {
-                error_log('Orkla Plugin: Retrieved ' . count($results) . ' records from Supabase');
-
-                // Transform Supabase data to frontend format
-                foreach ($results as &$row) {
-                    $row['timestamp'] = $row['measured_at'];
-                    $row['vanntemperatur_syrstad'] = isset($row['water_temperature']) ? $row['water_temperature'] : null;
-                }
-
-                wp_send_json_success($results);
-                return;
-            }
-
-            error_log('Orkla Plugin: Supabase query failed or empty, falling back to WordPress database');
-        }
 
         global $wpdb;
         $table_name = $wpdb->prefix . 'orkla_water_data';
@@ -1715,53 +1680,41 @@ class OrklaWaterLevel {
         $labels = $this->get_field_labels();
 
         return array(
-            'vannforing_brattset' => array(
+            'water_level_1' => array(
                 'label'       => __('Vannføring Oppstrøms Brattset', 'orkla-water-level'),
                 'slug'        => 'oppstroms-brattset',
                 'color'       => '#2563eb',
                 'description' => __('Måler ved oppstrøms Brattset.', 'orkla-water-level'),
             ),
-            'vannforing_syrstad' => array(
+            'water_level_2' => array(
                 'label'       => __('Vannføring Syrstad', 'orkla-water-level'),
                 'slug'        => 'syrstad',
                 'color'       => '#0ea5e9',
                 'description' => __('Måler vannføring ved Syrstad.', 'orkla-water-level'),
             ),
-            'vannforing_storsteinsholen' => array(
+            'water_level_3' => array(
                 'label'       => __('Vannføring Storsteinshølen', 'orkla-water-level'),
                 'slug'        => 'storsteinsholen',
                 'color'       => '#22c55e',
                 'description' => __('Måler vannføring ved Storsteinshølen.', 'orkla-water-level'),
             ),
-            'produksjon_brattset' => array(
+            'flow_rate_1' => array(
                 'label'       => __('Produksjonsvannføring Brattset', 'orkla-water-level'),
                 'slug'        => 'produksjon-brattset',
                 'color'       => '#f97316',
                 'description' => __('Produsert vannføring ved Brattset.', 'orkla-water-level'),
             ),
-            'produksjon_grana' => array(
+            'flow_rate_2' => array(
                 'label'       => __('Produksjonsvannføring Grana', 'orkla-water-level'),
                 'slug'        => 'produksjon-grana',
                 'color'       => '#facc15',
                 'description' => __('Produsert vannføring ved Grana.', 'orkla-water-level'),
             ),
-            'produksjon_svorkmo' => array(
+            'flow_rate_3' => array(
                 'label'       => __('Produksjon Svorkmo', 'orkla-water-level'),
                 'slug'        => 'produksjon-svorkmo',
                 'color'       => '#8b5cf6',
                 'description' => __('Produsert vannføring ved Svorkmo.', 'orkla-water-level'),
-            ),
-            'rennebu_oppstroms' => array(
-                'label'       => __('Rennebu oppstrøms grana', 'orkla-water-level'),
-                'slug'        => 'rennebu-oppstroms',
-                'color'       => '#6b7280',
-                'description' => __('Vannføring ved Rennebu oppstrøms.', 'orkla-water-level'),
-            ),
-            'nedstroms_svorkmo' => array(
-                'label'       => __('Nedstrøms Svorkmo kraftverk', 'orkla-water-level'),
-                'slug'        => 'nedstroms-svorkmo',
-                'color'       => '#ec4899',
-                'description' => __('Vannføring nedstrøms Svorkmo kraftverk.', 'orkla-water-level'),
             ),
         );
     }
@@ -1792,19 +1745,6 @@ class OrklaWaterLevel {
     }
 
     private function get_latest_measurement_snapshot() {
-        // Try Supabase first
-        if (isset($this->supabase_client) && $this->supabase_client->is_configured()) {
-            $snapshot = $this->supabase_client->get_latest_measurement();
-
-            if ($snapshot) {
-                error_log('Orkla Plugin: Retrieved latest measurement from Supabase');
-                return $snapshot;
-            }
-
-            error_log('Orkla Plugin: No Supabase data, falling back to WordPress database');
-        }
-
-        // Fallback to WordPress database
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'orkla_water_data';
